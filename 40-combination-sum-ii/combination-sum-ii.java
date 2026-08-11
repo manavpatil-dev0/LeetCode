@@ -1,53 +1,49 @@
-import java.util.*;
+import java.util.AbstractList;
 
 class Solution {
-    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+    private List<List<Integer>> mList;
+    private HashSet<List<Integer>> set;
 
-        Arrays.sort(candidates);
+    public List<List<Integer>> combinationSum2(int[] arr, int k) {
+        return new AbstractList<List<Integer>>() {
+            @Override
+            public int size() {
+                init();
+                return mList.size();
+            }
 
-        List<List<Integer>> result = new ArrayList<>();
+            @Override
+            public List<Integer> get(int i) {
+                init();
+                return mList.get(i);
+            }
 
-        backtrack(candidates, target, 0, new ArrayList<>(), result);
+            private void init() {
+                if (mList != null)
+                    return;
+                set = new HashSet<>();
+                Arrays.sort(arr);
+                counter(arr, 0, 0, k, new ArrayList<Integer>());
+                mList = new ArrayList<>(set);
 
-        return result;
+            }
+        };
     }
 
-    private void backtrack(
-            int[] candidates,
-            int target,
-            int start,
-            List<Integer> current,
-            List<List<Integer>> result) {
-
-        if (target == 0) {
-            result.add(new ArrayList<>(current));
+    private void counter(int[] arr, int i, int sum, int k, List<Integer> list) {
+        if (sum == k) {
+            set.add(new ArrayList<>(list));
             return;
         }
-
-        for (int i = start; i < candidates.length; i++) {
-
-            // Skip duplicate choices at the same recursion level
-            if (i > start && candidates[i] == candidates[i - 1]) {
-                continue;
-            }
-
-            // Since array is sorted, no later element can work
-            if (candidates[i] > target) {
-                break;
-            }
-
-            current.add(candidates[i]);
-
-            // i + 1 because each element can be used only once
-            backtrack(
-                candidates,
-                target - candidates[i],
-                i + 1,
-                current,
-                result
-            );
-
-            current.remove(current.size() - 1);
+        if (i == arr.length || sum > k)
+            return;
+        list.add(arr[i]);
+        counter(arr, i + 1, sum + arr[i], k, list);
+        list.remove(list.size() - 1);
+        int next = i + 1;
+        while (next < arr.length && arr[next] == arr[i]) {
+            next++;
         }
+        counter(arr, next, sum, k, list);
     }
 }
