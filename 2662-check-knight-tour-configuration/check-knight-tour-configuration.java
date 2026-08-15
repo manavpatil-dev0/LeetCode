@@ -1,46 +1,94 @@
+// //Method 1 :- Simulation/Traversal method
+// class Solution {
+
+//     public boolean checkValidGrid(int[][] grid) {
+
+//         int n = grid.length;
+
+        
+//         if (grid[0][0] != 0) {
+//             return false;
+//         }
+
+//         int row = 0;
+//         int col = 0;
+//         int current = 0;
+
+//         int[][] moves = { // all 8 move of Knight
+//             {2, 1},
+//             {2, -1},
+//             {-2, 1},
+//             {-2, -1},
+//             {1, 2},
+//             {1, -2},
+//             {-1, 2},
+//             {-1, -2}
+//         };
+
+//         while (current < n * n - 1) {
+
+//             boolean found = false;
+
+//             for (int[] move : moves) {
+
+//                 int newRow = row + move[0];
+//                 int newCol = col + move[1];
+
+//                 if (newRow >= 0 && newRow < n &&
+//                     newCol >= 0 && newCol < n) {
+
+//                     if (grid[newRow][newCol] == current + 1) {
+
+//                         row = newRow;
+//                         col = newCol;
+//                         current++;
+
+//                         found = true;
+//                         break;
+//                     }
+//                 }
+//             }
+
+//             if (!found) {
+//                 return false;
+//             }
+//         }
+
+//         return true;
+//     }
+// }
+
+
+
+//Metho:- backtraking
 class Solution {
-    public boolean checkValidGrid(int[][] grid) {
-
-        int n = grid.length;
-
-        // Must start at top-left
-        if (grid[0][0] != 0) {
+    public static boolean isValid(int grid[][], int r, int c, int n, int expVal){
+        if(r < 0 || r >= n || c < 0 || c >= n || grid[r][c] != expVal){
             return false;
         }
 
-        int[][] pos = new int[n * n][2];
-
-        // Store position of each move
-        for (int r = 0; r < n; r++) {
-            for (int c = 0; c < n; c++) {
-
-                int move = grid[r][c];
-
-                pos[move][0] = r;
-                pos[move][1] = c;
-            }
+        if(expVal == n*n-1){
+            return true;
         }
 
-        // Check every consecutive move
-        for (int move = 1; move < n * n; move++) {
+        //8 Possible moves of knight
+        boolean ans1 = isValid(grid, r-2, c+1, n,expVal + 1);
+        boolean ans2 = isValid(grid, r-1, c+2, n,expVal + 1);
+        boolean ans3 = isValid(grid, r+1, c+2, n, expVal + 1);
+        boolean ans4 = isValid(grid, r+2, c+1, n, expVal + 1);
+        boolean ans5 = isValid(grid, r+2, c-1, n, expVal + 1);
+        boolean ans6 = isValid(grid, r+1, c-2, n, expVal + 1);
+        boolean ans7 = isValid(grid, r-1, c-2, n, expVal + 1);
+        boolean ans8 = isValid(grid, r-2, c-1, n, expVal + 1);
+        
 
-            int r1 = pos[move - 1][0];
-            int c1 = pos[move - 1][1];
+        return ans1 || ans2 || ans3 || ans4 || ans5 || ans6 || ans7 || ans8;
 
-            int r2 = pos[move][0];
-            int c2 = pos[move][1];
+        
+    }
 
-            int rowDiff = Math.abs(r1 - r2);
-            int colDiff = Math.abs(c1 - c2);
+    public boolean checkValidGrid(int[][] grid) {
+        return isValid(grid, 0, 0, grid.length, 0);
 
-            // Knight move:
-            // (2,1) or (1,2)
-            if (!((rowDiff == 2 && colDiff == 1) ||
-                  (rowDiff == 1 && colDiff == 2))) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
